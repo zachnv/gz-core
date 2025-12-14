@@ -97,7 +97,7 @@ public class ARAmmo {
         shadowTexture.dispose();
     }
 
-    // Optional setters for scaling adjustments
+    // Setters for scaling adjustments
     public void setAmmoScale(float scale) { this.ammoScale = scale; }
     public void setShadowScale(float scale) { this.shadowScale = scale; }
 }

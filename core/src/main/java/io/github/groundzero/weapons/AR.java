@@ -8,8 +8,8 @@ import com.badlogic.gdx.math.MathUtils;
 import io.github.groundzero.entities.Bullet;
 
 /**
- * AR class. Handles shooting, reloading, and rendering the weapon
- * Also has a bobbing animation effect and manages the ammo for the player
+ * AR class. Handles shooting, reloading, and rendering of this weapon
+ * Bobbing animation effect and manages the ammo for the player
  */
 public class AR {
     // AR fields
@@ -87,7 +87,7 @@ public class AR {
         // Animation timer for bobbing effect
         animationTimer += deltaTime;
 
-        // Automatic reloading when magazine is empty
+        // Automatic reloading when magazine = empty
         if (!reloading && magazineAmmo == 0 && reserveAmmo > 0) {
             reloading = true;
             reloadTimer = 0f;
@@ -117,7 +117,7 @@ public class AR {
     }
 
     /**
-     * Shoots a bullet in the direction the AR is pointing.
+     * Shoots a bullet in the direction the AR is pointing
      *
      * @param targetX The X position of the shooting target
      * @param targetY The Y position of the shooting target
@@ -171,7 +171,7 @@ public class AR {
         float height = currentTexture.getHeight() * scale;
         float originX = width / 2f;
         float originY = height / 2f;
-        boolean flipX = !facingRight; // Flip the texture if facing left
+        boolean flipX = !facingRight; // Flip the texture horizontally if facing left
 
         // Draw the AR texture
         batch.draw(currentTexture, gunDrawX, gunDrawY, originX, originY,

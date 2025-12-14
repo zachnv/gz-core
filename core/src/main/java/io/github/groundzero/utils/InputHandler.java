@@ -2,7 +2,7 @@ package io.github.groundzero.utils;
 
 import com.badlogic.gdx.Input;
 
-/*
+/**
 Input Handler
  */
 public class InputHandler {

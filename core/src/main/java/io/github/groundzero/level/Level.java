@@ -10,7 +10,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 
 /**
- * Level loads and renders a Tiled .tmx map and collision/trees/other layer
+ * Level loads and renders the Tiled groundzero.tmx map and collision/trees/other layers
  */
 public class Level {
     private final TiledMap tiledMap;
@@ -53,7 +53,7 @@ public class Level {
     }
 
     /**
-     * Draws the trees layer, fading to 50% if player walks into tree
+     * Draws the trees layer, 50% opacity if player walks into tree
      */
     public void renderTrees(OrthographicCamera camera,
                             SpriteBatch batch,
@@ -101,7 +101,7 @@ public class Level {
     }
 
     /**
-     * @return true if the world‐coordinate (x,y) hits a tile in the collision layer only
+     * @return true if the world coordinate (x,y) hits a tile in the collision layer only
      */
     public boolean isWallAt(float worldX, float worldY) {
         float tw = collisionLayer.getTileWidth();

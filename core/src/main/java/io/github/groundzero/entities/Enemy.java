@@ -168,7 +168,7 @@ public class Enemy {
     }
 
     public void update(float deltaTime, Player player) {
-        // Update bobbing timer for gun animation
+        // Update timer for gun animation
         animationTimer += deltaTime;
 
         // Update enemy's bullets
@@ -250,7 +250,7 @@ public class Enemy {
                 shootCooldown = MathUtils.random(1f, 3f);
             }
 
-            // Bounce‐off collision with player
+            // Bounce off collision with player
             Rectangle eR = new Rectangle(x, y, getCollisionWidth(), getCollisionHeight());
             Rectangle pR = new Rectangle(player.getX(), player.getY(), player.getWidth(), player.getHeight());
             if (eR.overlaps(pR)) {

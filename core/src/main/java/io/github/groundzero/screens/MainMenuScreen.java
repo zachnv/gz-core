@@ -138,8 +138,7 @@ public class MainMenuScreen implements Screen {
                 String instructionsText =
                     "Click play and then it takes you into the game screen where you spawn with an AR, 120 bullets,\n" +
                         "and can walk around using (W, A, S, D) and left-click on mouse to shoot, when your mag is empty, the gun will automatically reload,\n" +
-                        "or if you would like to reload when needed, just press \"R\", and also this is self explanatory,\n" +
-                        "but the bullets go wherever your crosshair is aiming.";
+                        "or if you would like to reload when needed, just press \"R\".";
                 Dialog dialog = new Dialog("Instructions", skin);
                 dialog.text(instructionsText);
                 dialog.button("OK");

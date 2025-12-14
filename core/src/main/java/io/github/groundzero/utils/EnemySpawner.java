@@ -33,7 +33,7 @@ public class EnemySpawner {
      * Checks for collisions between player bullets and enemies
      *
      * @param deltaTime The time passed since the last frame
-     * @param player    The player to base enemy spawning on
+     * @param player The player to base enemy spawning on
      */
     public void update(float deltaTime, Player player) {
         spawnTimer += deltaTime;

@@ -20,12 +20,12 @@ public class Bullet {
     private final float scale = 0.65f;
     private final float verticalOffset = 30f;
 
-    // Creates the bullet with damage value (this one is used by AI enemies)
+    // Creates the bullet with damage value (enemy bullet)
     public Bullet(float x, float y, float dx, float dy, float rotation) {
         this(x, y, dx, dy, rotation, 10);
     }
 
-    // Creates the bullet with damage value
+    // Creates the bullet with damage value (player bullet)
     public Bullet(float x, float y, float dx, float dy, float rotation, int damage) {
         this.x = x;
         this.y = y;

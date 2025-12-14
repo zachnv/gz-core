@@ -1,0 +1,20 @@
+{
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": {
+    "default-font": { "file": "fonts/Bender_Regular.otf" }
+  },
+  "com.badlogic.gdx.graphics.Color": {
+    "white": { "r": 245, "g": 245, "b": 245, "a": 1 }
+  },
+  "com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
+    "default": {
+      "font": "default-font",
+      "fontColor": "white"
+    }
+  },
+  "com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
+    "default": {
+      "font": "default-font",
+      "fontColor": "white"
+    }
+  }
+}

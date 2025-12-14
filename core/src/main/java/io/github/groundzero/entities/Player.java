@@ -23,7 +23,7 @@ public class Player {
     private int score = 0;
     private final float scale = 4.0f;
 
-    // sprint multiplier
+    // Sprint multiplier
     private final float sprintMultiplier = 1.25f;
 
     // Animation variables
@@ -207,7 +207,7 @@ public class Player {
             }
         }
 
-        // Update bullets and remove out-of-bounds bullets
+        // Update bullets and remove OOB bullets
         for (int i = 0; i < bullets.size(); i++) {
             Bullet bullet = bullets.get(i);
             bullet.update(deltaTime);

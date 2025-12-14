@@ -94,16 +94,16 @@ public class GameScreen implements Screen {
         );
         camera.update();
 
-        // render base layers (ground, collision, other)
+        // Render base layers (ground, collision, other)
         level.renderBase(camera);
 
-        // draw enemies & player
+        // Draw enemies & player
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         enemySpawner.render(batch);
         player.render(batch);
 
-        // fade trees around the player
+        // Fade trees around the player
         Rectangle playerBounds = new Rectangle(
             player.getX(),
             player.getY(),
