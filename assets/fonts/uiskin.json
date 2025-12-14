@@ -1,6 +1,6 @@
 {
   "com.badlogic.gdx.graphics.g2d.BitmapFont": {
-    "default-font": { "file": "fonts/Bender_Regular.otf" }
+    "default-font": { "file": "fonts/stalker.otf" }
   },
   "com.badlogic.gdx.graphics.Color": {
     "white": { "r": 245, "g": 245, "b": 245, "a": 1 }

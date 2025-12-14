@@ -1,21 +1,25 @@
 package io.github.groundzero.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.groundzero.GroundZero;
 
@@ -36,6 +40,12 @@ public class MainMenuScreen implements Screen {
     // Move background around with mouse
     private final float MOUSE_OFFSET_FACTOR = 0.05f;
 
+    // uiPixel overlay
+    private Texture uiPixel;
+
+    // Enter to play
+    private TextButton playButton;
+
     public MainMenuScreen(GroundZero game) {
         this.game = game;
         this.batch = new SpriteBatch();
@@ -44,8 +54,15 @@ public class MainMenuScreen implements Screen {
         background = new Texture(Gdx.files.internal("menu/menubackground.png"));
         skin = new Skin(Gdx.files.internal("uiskin.json"));
 
+        // Create a 1x1 texture for overlays
+        Pixmap pm = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pm.setColor(Color.WHITE);
+        pm.fill();
+        uiPixel = new Texture(pm);
+        pm.dispose();
+
         // Play background music
-        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("menu/music/groundzero.mp3"));
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("menu/music/menumusic.mp3"));
         backgroundMusic.setLooping(true);
         backgroundMusic.setVolume(0.05f);
         backgroundMusic.play();
@@ -54,13 +71,14 @@ public class MainMenuScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         // Font for title
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Bender_Bold.otf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/stalker.otf"));
         FreeTypeFontGenerator.FreeTypeFontParameter titleParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        titleParameter.size = 82;
+        titleParameter.size = 144;
         titleParameter.minFilter = Texture.TextureFilter.Linear;
         titleParameter.magFilter = Texture.TextureFilter.Linear;
         BitmapFont titleFont = generator.generateFont(titleParameter);
         skin.add("titleFont", titleFont);
+        generator.dispose();
 
         // Font for buttons
         FreeTypeFontGenerator buttonFontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Bender_Regular.otf"));
@@ -69,17 +87,29 @@ public class MainMenuScreen implements Screen {
         buttonFontParameter.minFilter = Texture.TextureFilter.Linear;
         buttonFontParameter.magFilter = Texture.TextureFilter.Linear;
         BitmapFont buttonFont = buttonFontGenerator.generateFont(buttonFontParameter);
-        buttonFontGenerator.dispose();
-
         skin.add("buttonFont", buttonFont);
+
+        // Font for subtitle/hint
+        FreeTypeFontGenerator.FreeTypeFontParameter hintFontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        hintFontParameter.size = 22;
+        hintFontParameter.minFilter = Texture.TextureFilter.Linear;
+        hintFontParameter.magFilter = Texture.TextureFilter.Linear;
+        BitmapFont hintFont = buttonFontGenerator.generateFont(hintFontParameter);
+        skin.add("hintFont", hintFont);
+
+        buttonFontGenerator.dispose();
 
         TextButton.TextButtonStyle playExitButtonStyle = new TextButton.TextButtonStyle();
         playExitButtonStyle.font = skin.getFont("buttonFont");
 
-        playExitButtonStyle.up = null;
-        playExitButtonStyle.down = null;
-        playExitButtonStyle.checked = skin.newDrawable("white", Color.BLACK);
-        playExitButtonStyle.over = skin.newDrawable("white", 245, 245, 245, 0.075f);
+        // Rounded button
+        playExitButtonStyle.up = skin.newDrawable("default-round", new Color(0, 0, 0, 0.25f));
+        playExitButtonStyle.over = skin.newDrawable("default-round", new Color(1, 1, 1, 0.08f));
+        playExitButtonStyle.down = skin.newDrawable("default-round", new Color(1, 1, 1, 0.14f));
+
+        playExitButtonStyle.fontColor = new Color(1, 1, 1, 0.92f);
+        playExitButtonStyle.overFontColor = Color.WHITE;
+        playExitButtonStyle.downFontColor = Color.WHITE;
 
         skin.add("playExitButtonStyle", playExitButtonStyle);
 
@@ -87,9 +117,20 @@ public class MainMenuScreen implements Screen {
         font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
         // Table layout to center the UI
-        Table table = new Table();
-        table.setFillParent(true);
-        table.center();
+        Table root = new Table();
+        root.setFillParent(true);
+        root.center();
+
+        // Card/panel for contrast
+        Table card = new Table();
+        card.setBackground(skin.newDrawable("default-round", new Color(0, 0, 0, 0.22f)));
+        card.pad(42);
+
+        // Border around the card
+        Table cardBorder = new Table();
+        cardBorder.setBackground(skin.newDrawable("default-round", new Color(1, 1, 1, 0.06f)));
+        cardBorder.pad(2);
+        cardBorder.add(card);
 
         // Title label and play/exit/instructions buttons
         Label.LabelStyle titleStyle = new Label.LabelStyle();
@@ -97,22 +138,40 @@ public class MainMenuScreen implements Screen {
         Label title = new Label("GROUND ZERO", titleStyle);
         title.setFontScale(1f);
 
-        TextButton playButton = new TextButton("PLAY", skin, "playExitButtonStyle");
+        Label.LabelStyle hintStyle = new Label.LabelStyle();
+        hintStyle.font = skin.getFont("hintFont");
+        hintStyle.fontColor = new Color(1, 1, 1, 0.7f);
+        Label hint = new Label("PRESS ENTER TO PLAY", hintStyle);
+
+        playButton = new TextButton("PLAY", skin, "playExitButtonStyle");
         TextButton exitButton = new TextButton("EXIT", skin, "playExitButtonStyle");
-        TextButton instructionsButton = new TextButton("INSTRUCTIONS", skin, "playExitButtonStyle");
+        //TextButton instructionsButton = new TextButton("INSTRUCTIONS", skin, "playExitButtonStyle");
+
+        // Scale smoothly on hover
+        playButton.setTransform(true);
+        playButton.setOrigin(Align.center);
+        exitButton.setTransform(true);
+        exitButton.setOrigin(Align.center);
 
         // UI tables with padding and spacing
-        table.add(title).padBottom(30);
-        table.row();
-        table.add(playButton).size(220, 60).padTop(60);
-        table.row();
-        table.add(exitButton).size(220, 60).padTop(20);
-        table.row();
-        table.row();
-        table.row();
-        table.add(instructionsButton).size(300, 50).padTop(20);
+        card.add(title).padBottom(18);
+        card.row();
+        card.add(hint).padBottom(22);
+        card.row();
+        card.add(playButton).width(320).height(72).padTop(6);
+        card.row();
+        card.add(exitButton).width(320).height(72).padTop(14);
+        card.row();
+        card.row();
+        //card.row();
+        //card.add(instructionsButton).size(300, 50).padTop(20);
 
-        stage.addActor(table);
+        root.add(cardBorder);
+        stage.addActor(root);
+
+        // Fade in the menu UI
+        cardBorder.getColor().a = 0f;
+        cardBorder.addAction(Actions.fadeIn(0.35f));
 
         // Click listener on the play button to change screen
         playButton.addListener(new ClickListener() {
@@ -120,6 +179,16 @@ public class MainMenuScreen implements Screen {
             public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
                 game.setScreen(new io.github.groundzero.screens.GameScreen(game));
                 dispose();
+            }
+
+            @Override
+            public void enter(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                playButton.addAction(Actions.scaleTo(1.03f, 1.03f, 0.08f));
+            }
+
+            @Override
+            public void exit(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y, int pointer, Actor toActor) {
+                playButton.addAction(Actions.scaleTo(1f, 1f, 0.08f));
             }
         });
 
@@ -129,22 +198,32 @@ public class MainMenuScreen implements Screen {
             public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
                 Gdx.app.exit();
             }
+
+            @Override
+            public void enter(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                exitButton.addAction(Actions.scaleTo(1.03f, 1.03f, 0.08f));
+            }
+
+            @Override
+            public void exit(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y, int pointer, Actor toActor) {
+                exitButton.addAction(Actions.scaleTo(1f, 1f, 0.08f));
+            }
         });
 
         // Click listener on the instructions button to show instructions menu
-        instructionsButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-                String instructionsText =
-                    "Click play and then it takes you into the game screen where you spawn with an AR, 120 bullets,\n" +
-                        "and can walk around using (W, A, S, D) and left-click on mouse to shoot, when your mag is empty, the gun will automatically reload,\n" +
-                        "or if you would like to reload when needed, just press \"R\".";
-                Dialog dialog = new Dialog("Instructions", skin);
-                dialog.text(instructionsText);
-                dialog.button("OK");
-                dialog.show(stage);
-            }
-        });
+        /**instructionsButton.addListener(new ClickListener() {
+        @Override
+        public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
+        String instructionsText =
+        "Click play and then it takes you into the game screen where you spawn with an AR, 120 bullets,\n" +
+        "and can walk around using (W, A, S, D) and left-click on mouse to shoot, when your mag is empty, the gun will automatically reload,\n" +
+        "or if you would like to reload when needed, just press \"R\".";
+        Dialog dialog = new Dialog("Instructions", skin);
+        dialog.text(instructionsText);
+        dialog.button("OK");
+        dialog.show(stage);
+        }
+        });*/
     }
 
     @Override
@@ -155,6 +234,13 @@ public class MainMenuScreen implements Screen {
 
         int screenWidth = Gdx.graphics.getWidth();
         int screenHeight = Gdx.graphics.getHeight();
+
+        // Press enter to play
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+            game.setScreen(new io.github.groundzero.screens.GameScreen(game));
+            dispose();
+            return;
+        }
 
         // Retrieve the current mouse position
         float mouseX = Gdx.input.getX();
@@ -186,6 +272,12 @@ public class MainMenuScreen implements Screen {
 
         batch.begin();
         batch.draw(background, drawX, drawY, scaledBgWidth, scaledBgHeight);
+
+        // Dark overlay
+        batch.setColor(0f, 0f, 0f, 0.18f);
+        batch.draw(uiPixel, 0, 0, screenWidth, screenHeight);
+        batch.setColor(Color.WHITE);
+
         batch.end();
 
         stage.act(delta);
@@ -209,6 +301,7 @@ public class MainMenuScreen implements Screen {
         stage.dispose();
         skin.dispose();
         batch.dispose();
+        if (uiPixel != null) uiPixel.dispose();
         if (backgroundMusic != null) backgroundMusic.dispose();
     }
 }
