@@ -1,5 +1,5 @@
-# Ground Zero (libGDX)
-Ground Zero is a Java-based 2D top-down roguelike shooter built with libGDX.
+# GZ (libGDX)
+GZ is a Java-based 2D top-down roguelike shooter built with libGDX.
 The project features AI-driven enemies, tile-based levels, and a modular
 architecture designed for scalability and maintainability.
 
