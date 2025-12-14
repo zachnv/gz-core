@@ -8,7 +8,7 @@ The project features AI-driven enemies, tile-based map, and designed for scalabi
 ## Running the Game
 To build a runnable desktop distribution, run from the source:
 ```bash
-git clone https://github.com/zachnv/gz-core.git
+git clone https://github.com/zachvaughn/gz-core.git
 cd gz-core
 ./gradlew lwjgl3:run
 
