@@ -39,5 +39,5 @@ This project was originally developed as an academic project and
 later refined, cleaned up, and published as a personal project.
 
 ## Credits:
-Tileset for map: https://szadiart.itch.io/postapo-lands-set1
-Other textures: https://blackhunterdev.itch.io/stlaker-like-pixel-art-pack
+```https://szadiart.itch.io/postapo-lands-set1``` - Tileset for map
+```https://blackhunterdev.itch.io/stlaker-like-pixel-art-pack``` - All other textures
