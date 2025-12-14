@@ -64,9 +64,6 @@ public class Enemy {
     // List of bullets fired by the enemy
     private ArrayList<Bullet> bullets;
 
-    // Hitmarker sound for when enemy is hit
-    private Sound hitmarkerSound;
-
     // Bobbing animation fields for the enemy's gun
     private float animationTimer = 0f;
     private final float bobbingAmplitude = 0.5f;
@@ -88,6 +85,10 @@ public class Enemy {
 
     // Reference to the level for collision checks
     private Level level;
+
+    private final Rectangle playerRect = new Rectangle();
+    private final Vector2 segA = new Vector2();
+    private final Vector2 segB = new Vector2();
 
     public Enemy(float x, float y, Level level) {
         this.x = x;
@@ -137,13 +138,6 @@ public class Enemy {
             Gdx.app.error("Enemy", "Error loading enemy blinking texture", e);
         }
 
-        // Load hitmarker sound
-        try {
-            hitmarkerSound = Gdx.audio.newSound(Gdx.files.internal("entities/enemy/gun/hitmarker.wav"));
-        } catch (Exception e) {
-            Gdx.app.error("Enemy", "Error loading hitmarker sound", e);
-        }
-
         bullets = new ArrayList<>();
     }
 
@@ -171,15 +165,17 @@ public class Enemy {
         // Update timer for gun animation
         animationTimer += deltaTime;
 
+        playerRect.set(player.getX(), player.getY(), player.getWidth(), player.getHeight());
+
         // Update enemy's bullets
         for (int i = 0; i < bullets.size(); i++) {
             Bullet bullet = bullets.get(i);
             bullet.update(deltaTime);
-            Rectangle playerRect = new Rectangle(player.getX(), player.getY(), player.getWidth(), player.getHeight());
-            if (Intersector.intersectSegmentRectangle(
-                new Vector2(bullet.getPrevX(), bullet.getPrevY()),
-                new Vector2(bullet.getX(), bullet.getY()),
-                playerRect)) {
+
+            segA.set(bullet.getPrevX(), bullet.getPrevCollisionY());
+            segB.set(bullet.getX(), bullet.getCollisionY());
+
+            if (Intersector.intersectSegmentRectangle(segA, segB, playerRect)) {
                 player.takeDamage(bullet.getDamage());
                 bullet.dispose();
                 bullets.remove(i);
@@ -187,7 +183,7 @@ public class Enemy {
                 continue;
             }
             if (bullet.getX() < -50 || bullet.getX() > Gdx.graphics.getWidth() + 50 ||
-                bullet.getY() < -50 || bullet.getY() > Gdx.graphics.getHeight() + 50) {
+                bullet.getCollisionY() < -50 || bullet.getCollisionY() > Gdx.graphics.getHeight() + 50) {
                 bullet.dispose();
                 bullets.remove(i);
                 i--;
@@ -210,14 +206,14 @@ public class Enemy {
             float dist = (float)Math.hypot(proposedX - spawnX, proposedY - spawnY);
 
             if (dist <= maxChaseDistance) {
-                // horizontal collision check
+                // Horizontal collision check
                 if (!level.isWallAt(proposedX, y) &&
                     !level.isWallAt(proposedX + getCollisionWidth(), y) &&
                     !level.isWallAt(proposedX, y + getCollisionHeight()) &&
                     !level.isWallAt(proposedX + getCollisionWidth(), y + getCollisionHeight())) {
                     x = proposedX;
                 }
-                // vertical collision check
+                // Vertical collision check
                 if (!level.isWallAt(x, proposedY) &&
                     !level.isWallAt(x + getCollisionWidth(), proposedY) &&
                     !level.isWallAt(x, proposedY + getCollisionHeight()) &&
@@ -368,7 +364,6 @@ public class Enemy {
         if (health<=0) return;
         health-=amount;
         blinkTimer=BLINK_DURATION;
-        if (hitmarkerSound!=null) hitmarkerSound.play(0.1f);
     }
 
     public void dispose() {
@@ -378,7 +373,6 @@ public class Enemy {
         deadTexture.dispose();
         blinkingTexture.dispose();
         if (gunSound!=null) gunSound.dispose();
-        if (hitmarkerSound!=null) hitmarkerSound.dispose();
         for (Bullet b: bullets) b.dispose();
         if (medkit!=null) medkit.dispose();
         if (arAmmo!=null) arAmmo.dispose();

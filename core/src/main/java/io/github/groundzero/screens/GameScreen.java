@@ -3,8 +3,11 @@ package io.github.groundzero.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import io.github.groundzero.GroundZero;
@@ -35,6 +38,15 @@ public class GameScreen implements Screen {
     private float deathTimer = 0f;
     private static final float DEATH_DELAY = 2f;
 
+    // Fade in from black
+    private float fadeAlpha = 1f;
+    private final float FADE_DURATION = 0.75f;
+    private Texture uiPixel;
+
+    // Ambient sound fade in
+    private float ambientVolume = 0f;
+    private final float TARGET_AMBIENT_VOLUME = 0.7f;
+
     public GameScreen(GroundZero game) {
         this.game = game;
         this.batch = new SpriteBatch();
@@ -53,10 +65,17 @@ public class GameScreen implements Screen {
         hud = new HUD();
         enemySpawner = new EnemySpawner(level);
 
+        // Create a 1x1 texture for fade overlay
+        Pixmap pm = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pm.setColor(Color.WHITE);
+        pm.fill();
+        uiPixel = new Texture(pm);
+        pm.dispose();
+
         // Ambient sounds
         ambientSounds = Gdx.audio.newMusic(Gdx.files.internal("sounds/ambient/ambientsounds.mp3"));
         ambientSounds.setLooping(true);
-        ambientSounds.setVolume(0.7f);
+        ambientSounds.setVolume(ambientVolume);
         ambientSounds.play();
     }
 
@@ -64,6 +83,20 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        // Fade in from black
+        if (fadeAlpha > 0f) {
+            fadeAlpha -= delta / FADE_DURATION;
+            // Fade in ambient sound
+            if (ambientVolume < TARGET_AMBIENT_VOLUME) {
+                ambientVolume += delta / FADE_DURATION * TARGET_AMBIENT_VOLUME;
+                if (ambientVolume > TARGET_AMBIENT_VOLUME) {
+                    ambientVolume = TARGET_AMBIENT_VOLUME;
+                }
+                ambientSounds.setVolume(ambientVolume);
+            }
+            if (fadeAlpha < 0f) fadeAlpha = 0f;
+        }
 
         // If player is dead, death timer and return to main menu
         if (player.getHealth() <= 0) {
@@ -119,6 +152,15 @@ public class GameScreen implements Screen {
         batch.begin();
         hud.render(batch, player, uiCamera);
         batch.end();
+
+        // Draw fade overlay
+        if (fadeAlpha > 0f) {
+            batch.begin();
+            batch.setColor(0f, 0f, 0f, fadeAlpha);
+            batch.draw(uiPixel, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            batch.setColor(Color.WHITE);
+            batch.end();
+        }
     }
 
     /**
@@ -167,6 +209,7 @@ public class GameScreen implements Screen {
             ambientSounds.stop();
             ambientSounds.dispose();
         }
+        if (uiPixel != null) uiPixel.dispose();
         level.dispose();
         player.dispose();
         enemySpawner.dispose();

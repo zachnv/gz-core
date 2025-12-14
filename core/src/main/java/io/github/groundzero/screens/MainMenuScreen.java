@@ -46,6 +46,14 @@ public class MainMenuScreen implements Screen {
     // Enter to play
     private TextButton playButton;
 
+    // Fade to game screen
+    private boolean isTransitioning = false;
+    private float fadeAlpha = 0f;
+    private final float FADE_DURATION = 0.75f;
+
+    // Music fade out
+    private float musicVolume = 0.05f;
+
     public MainMenuScreen(GroundZero game) {
         this.game = game;
         this.batch = new SpriteBatch();
@@ -64,7 +72,7 @@ public class MainMenuScreen implements Screen {
         // Play background music
         backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("menu/music/menumusic.mp3"));
         backgroundMusic.setLooping(true);
-        backgroundMusic.setVolume(0.05f);
+        backgroundMusic.setVolume(musicVolume);
         backgroundMusic.play();
 
         stage = new Stage(new ScreenViewport());
@@ -102,14 +110,14 @@ public class MainMenuScreen implements Screen {
         TextButton.TextButtonStyle playExitButtonStyle = new TextButton.TextButtonStyle();
         playExitButtonStyle.font = skin.getFont("buttonFont");
 
-        // Rounded button backgrounds
-        playExitButtonStyle.up = skin.newDrawable("default-round", new Color(0, 0, 0, 0.25f));
-        playExitButtonStyle.over = skin.newDrawable("default-round", new Color(1, 1, 1, 0.08f));
-        playExitButtonStyle.down = skin.newDrawable("default-round", new Color(1, 1, 1, 0.14f));
+        // White text only until hover, then invert to white background with black text
+        playExitButtonStyle.up = null;
+        playExitButtonStyle.over = skin.newDrawable("default-round", Color.WHITE);
+        playExitButtonStyle.down = skin.newDrawable("default-round", new Color(0.92f, 0.92f, 0.92f, 1f));
 
-        playExitButtonStyle.fontColor = new Color(1, 1, 1, 0.92f);
-        playExitButtonStyle.overFontColor = Color.WHITE;
-        playExitButtonStyle.downFontColor = Color.WHITE;
+        playExitButtonStyle.fontColor = Color.WHITE;
+        playExitButtonStyle.overFontColor = Color.BLACK;
+        playExitButtonStyle.downFontColor = Color.BLACK;
 
         skin.add("playExitButtonStyle", playExitButtonStyle);
 
@@ -123,13 +131,9 @@ public class MainMenuScreen implements Screen {
 
         // Card/panel to give contrast over the background
         Table card = new Table();
-        card.setBackground(skin.newDrawable("default-round", new Color(0, 0, 0, 0.22f)));
-        card.pad(42);
 
         // Border around the card
         Table cardBorder = new Table();
-        cardBorder.setBackground(skin.newDrawable("default-round", new Color(1, 1, 1, 0.06f)));
-        cardBorder.pad(2);
         cardBorder.add(card);
 
         // Title label and play/exit/instructions buttons
@@ -158,9 +162,9 @@ public class MainMenuScreen implements Screen {
         card.row();
         card.add(hint).padBottom(22);
         card.row();
-        card.add(playButton).width(320).height(72).padTop(6);
+        card.add(playButton).width(270).height(72).padTop(6);
         card.row();
-        card.add(exitButton).width(320).height(72).padTop(14);
+        card.add(exitButton).width(270).height(72).padTop(14);
         card.row();
         card.row();
         //card.row();
@@ -177,8 +181,7 @@ public class MainMenuScreen implements Screen {
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-                game.setScreen(new io.github.groundzero.screens.GameScreen(game));
-                dispose();
+                startGameTransition();
             }
 
             @Override
@@ -226,6 +229,13 @@ public class MainMenuScreen implements Screen {
         });*/
     }
 
+    // Fade into game screen
+    private void startGameTransition() {
+        if (isTransitioning) return;
+        isTransitioning = true;
+        stage.getRoot().setTouchable(com.badlogic.gdx.scenes.scene2d.Touchable.disabled);
+    }
+
     @Override
     public void render(float delta) {
         // Clear the screen
@@ -237,9 +247,22 @@ public class MainMenuScreen implements Screen {
 
         // Press enter to play
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            game.setScreen(new io.github.groundzero.screens.GameScreen(game));
-            dispose();
-            return;
+            startGameTransition();
+        }
+
+        // Fade into game screen
+        if (isTransitioning) {
+            fadeAlpha += delta / FADE_DURATION;
+            // Fade out menu music
+            musicVolume -= delta / FADE_DURATION * 0.05f;
+            if (musicVolume < 0f) musicVolume = 0f;
+            backgroundMusic.setVolume(musicVolume);
+            if (fadeAlpha >= 1f) {
+                fadeAlpha = 1f;
+                game.setScreen(new io.github.groundzero.screens.GameScreen(game));
+                dispose();
+                return;
+            }
         }
 
         // Retrieve the current mouse position
@@ -273,7 +296,7 @@ public class MainMenuScreen implements Screen {
         batch.begin();
         batch.draw(background, drawX, drawY, scaledBgWidth, scaledBgHeight);
 
-        // Subtle dark overlay to help readability
+        // Overlay for readability
         batch.setColor(0f, 0f, 0f, 0.18f);
         batch.draw(uiPixel, 0, 0, screenWidth, screenHeight);
         batch.setColor(Color.WHITE);
@@ -282,6 +305,15 @@ public class MainMenuScreen implements Screen {
 
         stage.act(delta);
         stage.draw();
+
+        // Fade into game screen
+        if (fadeAlpha > 0f) {
+            batch.begin();
+            batch.setColor(0f, 0f, 0f, fadeAlpha);
+            batch.draw(uiPixel, 0, 0, screenWidth, screenHeight);
+            batch.setColor(Color.WHITE);
+            batch.end();
+        }
     }
 
     @Override

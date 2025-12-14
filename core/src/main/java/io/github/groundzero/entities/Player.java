@@ -41,8 +41,9 @@ public class Player {
     // Bullet list
     private ArrayList<Bullet> bullets = new ArrayList<>();
 
-    // Crosshair offset
+    // Crosshair offset / size
     private float crosshairOffsetX, crosshairOffsetY;
+    private float crosshairScale = 0.85f;
 
     private enum State {
         IDLE,
@@ -132,7 +133,7 @@ public class Player {
         boolean sprinting = InputHandler.isKeyPressed(Input.Keys.SHIFT_LEFT);
         float moveDelta = deltaTime * (sprinting ? sprintMultiplier : 1f);
 
-        stateTime += moveDelta;  // speed up animation when sprinting
+        stateTime += moveDelta;  // Speed up animation when sprinting
         float newX = x;
         float newY = y;
         boolean moving = false;
@@ -265,9 +266,17 @@ public class Player {
     public void renderCrosshair(SpriteBatch batch) {
         float crosshairX = getCenterX() + crosshairOffsetX;
         float crosshairY = getCenterY() + crosshairOffsetY;
-        batch.draw(crosshairTexture,
-            crosshairX - crosshairTexture.getWidth() / 2f,
-            crosshairY - crosshairTexture.getHeight() / 2f);
+
+        float width  = crosshairTexture.getWidth() * crosshairScale;
+        float height = crosshairTexture.getHeight() * crosshairScale;
+
+        batch.draw(
+            crosshairTexture,
+            crosshairX - width / 2f,
+            crosshairY - height / 2f,
+            width,
+            height
+        );
     }
 
     public ArrayList<Bullet> getBullets() {

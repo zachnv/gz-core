@@ -21,7 +21,7 @@ public class AR {
     private float gunAngle = 0f;
     private float rawAngle = 0f;
     private Sound gunSound;
-    private static final float GUNSHOT_VOLUME = 0.1f;
+    private static final float GUNSHOT_VOLUME = 0.05f;
 
     // Ammo and reloading fields
     private final int magazineCapacity = 30;

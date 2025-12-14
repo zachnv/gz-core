@@ -29,6 +29,8 @@ public class Bullet {
     public Bullet(float x, float y, float dx, float dy, float rotation, int damage) {
         this.x = x;
         this.y = y;
+        this.prevX = x;
+        this.prevY = y;
         this.dx = dx;
         this.dy = dy;
         this.rotation = rotation;
@@ -44,6 +46,8 @@ public class Bullet {
 
     // Updates the bullet's position based on its movement direction and speed
     public void update(float deltaTime) {
+        prevX = x;
+        prevY = y;
         x += dx * speed * deltaTime;
         y += dy * speed * deltaTime;
     }
@@ -68,6 +72,9 @@ public class Bullet {
     public float getHeight() { return texture.getHeight() * scale; }
     public float getPrevX() { return prevX; }
     public float getPrevY() { return prevY; }
+
+    public float getCollisionY() { return y + verticalOffset; }
+    public float getPrevCollisionY() { return prevY + verticalOffset; }
 
     // Disposes of the bullet texture
     public void dispose() {
