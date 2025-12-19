@@ -1,42 +1,60 @@
-# GZ (libGDX)
-GZ is a Java-based 2D top-down roguelike shooter demo built with libGDX.
-The project features AI-driven enemies, tile-based map, and designed for scalability and maintainability.
+# gz-core
+gz-core is a personal portfolio project built in Java using the libGDX framework. It is a small 2D top-down shooter developed to explore game architecture, real-time input handling, enemy AI behavior, and state-driven gameplay systems.  
 
-## Requirements
-- Java 17 or newer
-
-## Running the Game
-To build a runnable desktop distribution, run from the source:
-```bash
-git clone https://github.com/zachvaughn/gz-core.git
-cd gz-core
-./gradlew lwjgl3:run
-
-On Windows:
-gradlew lwjgl3:run
-```
-
-## Controls
-- Move: W A S D
-- Shoot: Left Mouse Button
-- Reload: R (automatic reload when magazine is empty)
+This project is not intended to be a production-ready game or reusable library. It was created to demonstrate design decisions, implementation skills, and familiarity with game development concepts in Java.
 
 ## Gameplay Overview
-The player spawns with an assault rifle and a limited ammo supply.
-AI-controlled enemies spawn throughout the level and engage the player.
-Defeated enemies have a chance to drop medkits that restore the player to full health.
+- 2D top-down perspective
+- W/A/S/D movement
+- Shooting via left mouse button
+- Hostile AI-controlled enemies
+- Enemy drops (medkits, ammo packs)
+- Health and ammo restoration via pickups
+- Game resets to the main menu on player death
 
-When the player dies, the game returns to the main menu, allowing the player
-to restart or exit.
+## Screenshots
+
+### Main Menu
+![Main Menu](assets/screenshots/main-menu.png)
+
+### Gameplay
+![Gameplay](assets/screenshots/gameplay.png)
+
+## Technologies Used
+- Java 17+
+- libGDX
+- Gradle
+- LWJGL3 (desktop backend)
 
 ## Project Structure
-```core``` — Shared game logic and systems\
-```lwjgl3``` — Desktop launcher using LWJGL3
+gz-core/  
+├── core/    # Core game logic, entities, systems, screens  
+├── lwjgl3/  # Desktop launcher (LWJGL3)  
+├── assets/  # Textures, sounds, and other resources  
+├── build.gradle  
+└── settings.gradle  
+
+## Running the Project
+To build a runnable desktop distribution, run from the source:
+```bash
+git clone https://github.com/zachnv/gz-core.git
+cd gz-core
+./gradlew lwjgl3:run
+```
+
+On Windows:
+```bash
+gradlew lwjgl3:run
+```
 
 ## Background
 This project was originally developed as an academic project and
 later refined, cleaned up, and published as a personal project.
 
+- Experimentation with game systems and mechanics
+- Iterative development rather than feature completeness
+- A focus on code structure and learning outcomes
+
 ## Credits:
-```https://szadiart.itch.io/postapo-lands-set1``` - Tileset for map
-```https://blackhunterdev.itch.io/stlaker-like-pixel-art-pack``` - All other textures
+- https://szadiart.itch.io/postapo-lands-set1 - Tileset for map  
+- https://blackhunterdev.itch.io/stlaker-like-pixel-art-pack - All other textures
