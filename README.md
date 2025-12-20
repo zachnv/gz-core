@@ -1,5 +1,5 @@
 # gz-core
-gz-core is a personal portfolio project built in Java using the libGDX framework. It is a small 2D top-down shooter developed to explore game architecture, real-time input handling, enemy AI behavior, and state-driven gameplay systems.  
+gz-core is a personal project built in Java using the libGDX framework. It is a small 2D top-down shooter developed to explore game architecture, real-time input handling, enemy AI behavior, and state-driven gameplay systems.  
 
 This project is not intended to be a production-ready game or reusable library. It was created to demonstrate design decisions, implementation skills, and familiarity with game development concepts in Java.
 
